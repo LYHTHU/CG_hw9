@@ -266,15 +266,15 @@ function onStartFrame(t, state) {
          }
       }
 
-      if(RC.isDown(1) && onScale) {
-         obj = objs[obj_idx];
+      if (LC.isDown(1) && RC.isDown(1) && onScale) {
+         let obj = objs[obj_idx];
          obj.scale = [1, 1, 1];
          for (let i = 0; i < 3; i++) {
             obj.scale[i] = Math.abs(RC.tip().slice()[i] - LC.tip().slice()[i]);
          }
       }
 
-      if((LC.release(1) || RC.release(1)) && onScale) {
+      if(LC.release(1)&& onScale) {
          onScale = false;
       }
 
