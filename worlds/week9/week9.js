@@ -153,6 +153,7 @@ to see what the options are.
 
 function ControllerHandler(controller) {
    this.isDown      = (i) => controller.buttons[i].pressed;
+   this.n_buttons   = () => controller.buttons.length;
    this.onEndFrame  = (i) => wasDown[i] = this.isDown(i);
    this.orientation = () => controller.pose.orientation;
    this.position    = () => controller.pose.position;
@@ -241,7 +242,7 @@ function onStartFrame(t, state) {
     -----------------------------------------------------------------*/
 
     if (LC) {
-      if (RC.isDown(1) && !onScale) {
+      if (RC.isDown(2) && !onScale) {
          menuChoice = findInMenu(RC.position(), LC.tip());
          if (menuChoice >= 0 && LC.press(1)) {
             isNewObj = true;
@@ -481,7 +482,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
     if (LC) {
        drawController(LC, [1,0,0]);
        drawController(RC, [0,1,1]);
-       if (RC.isDown(1) && ! onScale)
+       if (RC.isDown(2) && ! onScale)
           showMenu(RC.position());
     }
 
@@ -548,8 +549,12 @@ function onEndFrame(t, state) {
 
     -----------------------------------------------------------------*/
 
-   if (LC) LC.onEndFrame(1);
-   if (RC) RC.onEndFrame(1);
+   if (LC) {
+      for(let i = 0; i < LC.n_buttons(); i++)  LC.onEndFrame(i);
+   }
+   if (RC) {
+      for (let i = 0; i < RC.n_buttons(); i++)  RC.onEndFrame(i);
+   }
 }
 
 export default function main() {
