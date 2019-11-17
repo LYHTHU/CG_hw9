@@ -237,21 +237,48 @@ function onStartFrame(t, state) {
     -----------------------------------------------------------------*/
 
     if (LC) {
-       if (RC.isDown()) {
-	  menuChoice = findInMenu(RC.position(), LC.tip());
-	  if (menuChoice >= 0 && LC.press()) {
-	     isNewObj = true;
-	     objs.push(new Obj(menuShape[menuChoice]));
-	  }
-       }
-       if (isNewObj) {
-          let obj = objs[objs.length - 1];
-	  obj.position = LC.tip().slice();
-	  obj.orientation = LC.orientation().slice();
-       }
-       if (LC.release())
-          isNewObj = false;
-    }
+      if (RC.isDown()) {
+         menuChoice = findInMenu(RC.position(), LC.tip());
+         if (menuChoice >= 0 && LC.press()) {
+            isNewObj = true;
+            objs.push(new Obj(menuShape[menuChoice]));
+         }
+      }
+      if (isNewObj) {
+         let obj = objs[objs.length - 1];
+         obj.position = LC.tip().slice();
+         obj.orientation = LC.orientation().slice();
+      }
+     
+      if (LC.isDown() && !isNewObj) {
+         let idx = find_grab(LC);
+         if (idx >= 0) {
+            let obj = objs[idx];
+            obj.position = LC.tip().slice();
+            obj.orientation = LC.orientation().slice();
+         }
+      }
+
+      if (LC.release())
+         isNewObj = false;
+   }
+}
+
+let find_grab = (C) => {
+   let min_length = 0.09;
+   let idx = -1;
+   for (let i = 0; i < objs.length; i++) {
+      let tmp_pos = objs[i].position;
+      let x = C.tip().slice()[0] - tmp_pos[0];
+      let y = C.tip().slice()[1] - tmp_pos[1];
+      let z = C.tip().slice()[2] - tmp_pos[2];
+      let d = x * x + y * y + z * z;
+      if (d < min_length) {
+         min_length = d;
+         idx = i;
+      }
+   }
+   return idx;
 }
 
 let menuX = [-.2,-.1,-.2,-.1];
@@ -279,7 +306,7 @@ let findInMenu = (mp, p) => {
       let dy = y - menuY[n];
       let dz = z;
       if (dx * dx + dy * dy + dz * dz < .03 * .03)
-	 return n;
+	      return n;
    }
    return -1;
 }
@@ -447,22 +474,22 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
 
     -----------------------------------------------------------------*/
 
-    for (let n = 0 ; n < objs.length ; n++) {
-       let obj = objs[n], P = obj.position;
-       m.save();
+   for (let n = 0 ; n < objs.length ; n++) {
+      let obj = objs[n], P = obj.position;
+      m.save();
           m.translate(P[0], P[1], P[2]);
           m.rotateQ(obj.orientation);
           m.scale(.03,.03,.03);
-	  drawShape(obj.shape, [1,1,1]);
-       m.restore();
-    }
+	      drawShape(obj.shape, [1,1,1]);
+      m.restore();
+   }
 
-    if (state.calibrate)
-       m.set(state.calibrate);
+   if (state.calibrate)
+      m.set(state.calibrate);
 
-    m.translate(0, -EYE_HEIGHT, 0);
-    m.rotateX(tiltAngle);
-    m.rotateY(turnAngle);
+   m.translate(0, -EYE_HEIGHT, 0);
+   m.rotateX(tiltAngle);
+   m.rotateY(turnAngle);
 
     /*-----------------------------------------------------------------
 
@@ -472,21 +499,21 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
 
     -----------------------------------------------------------------*/
 
-    m.save();
-       m.translate(0, HALL_WIDTH/2, 0);
-       m.scale(-HALL_WIDTH/2, -HALL_WIDTH/2, -HALL_LENGTH/2);
-       drawShape(cube, [1,1,1], 1, 2);
-    m.restore();
+   m.save();
+      m.translate(0, HALL_WIDTH/2, 0);
+      m.scale(-HALL_WIDTH/2, -HALL_WIDTH/2, -HALL_LENGTH/2);
+      drawShape(cube, [1,1,1], 1, 2);
+   m.restore();
 
-    m.save();
-       m.translate((HALL_WIDTH - TABLE_DEPTH) / 2, 0, 0);
-       drawTable();
-    m.restore();
+   m.save();
+      m.translate((HALL_WIDTH - TABLE_DEPTH) / 2, 0, 0);
+      drawTable();
+   m.restore();
 
-    m.save();
-       m.translate((TABLE_DEPTH - HALL_WIDTH) / 2, 0, 0);
-       drawTable();
-    m.restore();
+   m.save();
+      m.translate((TABLE_DEPTH - HALL_WIDTH) / 2, 0, 0);
+      drawTable();
+   m.restore();
 
 }
 
