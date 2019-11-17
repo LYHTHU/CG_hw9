@@ -152,12 +152,12 @@ to see what the options are.
 --------------------------------------------------------------------------------*/
 
 function ControllerHandler(controller) {
-   this.isDown      = () => controller.buttons[1].pressed;
-   this.onEndFrame  = () => wasDown = this.isDown();
+   this.isDown      = (i) => controller.buttons[i].pressed;
+   this.onEndFrame  = () => wasDown[1] = this.isDown(1);
    this.orientation = () => controller.pose.orientation;
    this.position    = () => controller.pose.position;
-   this.press       = () => ! wasDown && this.isDown();
-   this.release     = () => wasDown && ! this.isDown();
+   this.press       = (i) => ! wasDown[i] && this.isDown(i);
+   this.release     = () => wasDown[1] && ! this.isDown(1);
    this.tip         = () => {
       let P = this.position();          // THIS CODE JUST MOVES
       m.identity();                     // THE "HOT SPOT" OF THE
@@ -167,7 +167,11 @@ function ControllerHandler(controller) {
       let v = m.value();
       return [v[12],v[13],v[14]];
    }
-   let wasDown = false;
+   let wasDown = [];
+
+   for (let i = 0; i < controller.buttons.length; i++) {
+      wasDown[i] = false;
+   }
 }
 
 let LC, RC, isNewObj;
@@ -237,9 +241,9 @@ function onStartFrame(t, state) {
     -----------------------------------------------------------------*/
 
     if (LC) {
-      if (RC.isDown()) {
+      if (RC.isDown(1)) {
          menuChoice = findInMenu(RC.position(), LC.tip());
-         if (menuChoice >= 0 && LC.press()) {
+         if (menuChoice >= 0 && LC.press(1)) {
             isNewObj = true;
             objs.push(new Obj(menuShape[menuChoice]));
          }
@@ -250,7 +254,7 @@ function onStartFrame(t, state) {
          obj.orientation = LC.orientation().slice();
       }
      
-      if (LC.isDown() && !isNewObj) {
+      if (LC.isDown(1) && !isNewObj) {
          let idx = find_grab(LC);
          if (idx >= 0) {
             let obj = objs[idx];
@@ -410,7 +414,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
     -----------------------------------------------------------------*/
 
     let drawController = (C, color) => {
-       let P = C.position(), s = C.isDown() ? .0125 : .0225;
+       let P = C.position(), s = C.isDown(1) ? .0125 : .0225;
        m.save();
           m.translate(P[0], P[1], P[2]);
           m.rotateQ(C.orientation());
@@ -460,7 +464,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
     if (LC) {
        drawController(LC, [1,0,0]);
        drawController(RC, [0,1,1]);
-       if (RC.isDown())
+       if (RC.isDown(1))
           showMenu(RC.position());
     }
 
