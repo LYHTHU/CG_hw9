@@ -174,7 +174,7 @@ function ControllerHandler(controller) {
    }
 }
 
-let LC, RC, isNewObj;
+let LC, RC, isNewObj = false, onScale = false;
 
 function onStartFrame(t, state) {
 
@@ -241,17 +241,21 @@ function onStartFrame(t, state) {
     -----------------------------------------------------------------*/
 
     if (LC) {
-      if (RC.isDown(1)) {
+      if (RC.isDown(1) && !onScale) {
          menuChoice = findInMenu(RC.position(), LC.tip());
          if (menuChoice >= 0 && LC.press(1)) {
             isNewObj = true;
             objs.push(new Obj(menuShape[menuChoice]));
          }
       }
+
+
+
       if (isNewObj) {
          let obj = objs[objs.length - 1];
          obj.position = LC.tip().slice();
          obj.orientation = LC.orientation().slice();
+         obj.scale = [1, 1, 1];
       }
      
       if (LC.isDown(1) && !isNewObj) {
@@ -260,8 +264,20 @@ function onStartFrame(t, state) {
             let obj = objs[idx];
             obj.position = LC.tip().slice();
             obj.orientation = LC.orientation().slice();
+
+            if(RC.isDown(1)) {
+               obj.scale = [1, 1, 1];
+               for (let i = 0; i < 3; i++) {
+                  obj.scale[i] = Math.abs(obj.position[i] - LC.tip().slice()[i]);
+               }
+            }
          }
       }
+
+      if(RC.release(1) && onScale) {
+         onScale = false;
+      }
+
 
       if (LC.release(1))
          isNewObj = false;
@@ -479,11 +495,11 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
     -----------------------------------------------------------------*/
 
    for (let n = 0 ; n < objs.length ; n++) {
-      let obj = objs[n], P = obj.position;
+      let obj = objs[n], P = obj.position, S = obj.scale;
       m.save();
           m.translate(P[0], P[1], P[2]);
           m.rotateQ(obj.orientation);
-          m.scale(.03,.03,.03);
+          m.scale(.03 * S[0], .03*S[1],.03*S[2]);
 	      drawShape(obj.shape, [1,1,1]);
       m.restore();
    }
