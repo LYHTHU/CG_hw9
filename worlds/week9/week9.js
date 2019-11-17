@@ -249,8 +249,6 @@ function onStartFrame(t, state) {
          }
       }
 
-
-
       if (isNewObj) {
          let obj = objs[objs.length - 1];
          obj.position = LC.tip().slice();
@@ -258,19 +256,20 @@ function onStartFrame(t, state) {
          obj.scale = [1, 1, 1];
       }
      
-      if (LC.isDown(1) && !isNewObj) {
+      if (LC.isDown(1) && !RC.isDown(1) && !isNewObj) {
          let idx = find_grab(LC);
          if (idx >= 0) {
             let obj = objs[idx];
             obj.position = LC.tip().slice();
             obj.orientation = LC.orientation().slice();
+            onScale = true;
+         }
+      }
 
-            if(RC.isDown(1)) {
-               obj.scale = [1, 1, 1];
-               for (let i = 0; i < 3; i++) {
-                  obj.scale[i] = Math.abs(obj.position[i] - LC.tip().slice()[i]);
-               }
-            }
+      if(RC.isDown(1) && onScale) {
+         obj.scale = [1, 1, 1];
+         for (let i = 0; i < 3; i++) {
+            obj.scale[i] = Math.abs(obj.position[i] - LC.tip().slice()[i]);
          }
       }
 
