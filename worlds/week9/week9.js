@@ -153,11 +153,11 @@ to see what the options are.
 
 function ControllerHandler(controller) {
    this.isDown      = (i) => controller.buttons[i].pressed;
-   this.onEndFrame  = () => wasDown[1] = this.isDown(1);
+   this.onEndFrame  = (i) => wasDown[i] = this.isDown(i);
    this.orientation = () => controller.pose.orientation;
    this.position    = () => controller.pose.position;
    this.press       = (i) => ! wasDown[i] && this.isDown(i);
-   this.release     = () => wasDown[1] && ! this.isDown(1);
+   this.release     = (i) => wasDown[i] && ! this.isDown(i);
    this.tip         = () => {
       let P = this.position();          // THIS CODE JUST MOVES
       m.identity();                     // THE "HOT SPOT" OF THE
@@ -263,7 +263,7 @@ function onStartFrame(t, state) {
          }
       }
 
-      if (LC.release())
+      if (LC.release(1))
          isNewObj = false;
    }
 }
@@ -531,8 +531,8 @@ function onEndFrame(t, state) {
 
     -----------------------------------------------------------------*/
 
-    if (LC) LC.onEndFrame();
-    if (RC) RC.onEndFrame();
+   if (LC) LC.onEndFrame(1);
+   if (RC) RC.onEndFrame(1);
 }
 
 export default function main() {
