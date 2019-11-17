@@ -257,9 +257,9 @@ function onStartFrame(t, state) {
       }
      
       if (LC.isDown(1) && !RC.isDown(1) && !isNewObj) {
-         let idx = find_grab(LC);
-         if (idx >= 0) {
-            let obj = objs[idx];
+         obj_idx = find_grab(LC);
+         if (obj_idx >= 0) {
+            let obj = objs[obj_idx];
             obj.position = LC.tip().slice();
             obj.orientation = LC.orientation().slice();
             onScale = true;
@@ -267,13 +267,14 @@ function onStartFrame(t, state) {
       }
 
       if(RC.isDown(1) && onScale) {
+         obj = objs[obj_idx];
          obj.scale = [1, 1, 1];
          for (let i = 0; i < 3; i++) {
-            obj.scale[i] = Math.abs(obj.position[i] - LC.tip().slice()[i]);
+            obj.scale[i] = Math.abs(RC.tip().slice()[i] - LC.tip().slice()[i]);
          }
       }
 
-      if(RC.release(1) && onScale) {
+      if((LC.release(1) || RC.release(1)) && onScale) {
          onScale = false;
       }
 
@@ -335,6 +336,7 @@ function Obj(shape) {
 };
 
 let objs = [];
+let obj_idx = -1;
 
 function onDraw(t, projMat, viewMat, state, eyeIdx) {
     gl.uniformMatrix4fv(state.uViewLoc, false, new Float32Array(viewMat));
@@ -498,7 +500,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
       m.save();
           m.translate(P[0], P[1], P[2]);
           m.rotateQ(obj.orientation);
-          m.scale(.03 * S[0], .03*S[1],.03*S[2]);
+          m.scale(.03*S[0], .03*S[1], .03*S[2]);
 	      drawShape(obj.shape, [1,1,1]);
       m.restore();
    }
