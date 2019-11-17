@@ -253,7 +253,7 @@ function onStartFrame(t, state) {
          let obj = objs[objs.length - 1];
          obj.position = LC.tip().slice();
          obj.orientation = LC.orientation().slice();
-         obj.scale = [1, 1, 1];
+         obj.scale = [0.03, 0.03, 0.03];
       }
      
       if (LC.isDown(1) && !RC.isDown(1) && !isNewObj) {
@@ -481,7 +481,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
     if (LC) {
        drawController(LC, [1,0,0]);
        drawController(RC, [0,1,1]);
-       if (RC.isDown(1))
+       if (RC.isDown(1) && ! onScale)
           showMenu(RC.position());
     }
 
@@ -500,7 +500,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
       m.save();
           m.translate(P[0], P[1], P[2]);
           m.rotateQ(obj.orientation);
-          m.scale(.03*S[0], .03*S[1], .03*S[2]);
+          m.scale(S[0], S[1], S[2]);
 	      drawShape(obj.shape, [1,1,1]);
       m.restore();
    }
