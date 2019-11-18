@@ -20,8 +20,11 @@ Modified:
 Open Menu: press the right controller's side button.
 
 Added interactions:
-Translation: press and keep down left controlers trigger when reach an object, 
+Scale: press and keep down left controlers trigger when reach an object, 
 then press the right  trigger. Then drag the two controller to adjust the scale.
+
+Translate: press and keep down left controlers trigger when reach an object, then 
+drag the object.
 
 Rotate: press and keep down the left side button when reach an object. And rotate 
 the LC to adjust the orientation of the object.
