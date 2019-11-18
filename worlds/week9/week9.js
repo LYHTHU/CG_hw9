@@ -25,6 +25,8 @@ then press the right  trigger. Then drag the two controller to adjust the scale.
 
 Rotate: press and keep down the left side button when reach an object. And rotate 
 the LC to adjust the orientation of the object.
+
+Texture: move RC to a object, press trigger, then use LC to select a texture.
 --------------------------------------------------------------------------------*/
 
 const EYE_HEIGHT       = 0.0254 *  69;
@@ -270,8 +272,7 @@ function onStartFrame(t, state) {
          obj_idx = find_grab(RC);
          let textureChoice = findInMenuTexture(RC.position(), LC.tip());
          if (obj_idx >= 0) {
-            let obj = objs[obj_idx];
-            obj.texture = textureChoice;
+            objs[obj_idx].texture = textureChoice;
          }
       }
 
