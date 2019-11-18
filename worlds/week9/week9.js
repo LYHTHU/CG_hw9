@@ -262,7 +262,7 @@ function onStartFrame(t, state) {
          if (obj_idx >= 0) {
             let obj = objs[obj_idx];
             obj.position = LC.tip().slice();
-            obj.orientation = LC.orientation().slice();
+            // obj.orientation = LC.orientation().slice();
             onScale = true;
          }
       }
@@ -499,9 +499,9 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
    for (let n = 0 ; n < objs.length ; n++) {
       let obj = objs[n], P = obj.position, S = obj.scale;
       m.save();
-          m.translate(P[0], P[1], P[2]);
-          m.rotateQ(obj.orientation);
-          m.scale(S[0], S[1], S[2]);
+         m.translate(P[0], P[1], P[2]);
+         m.scale(S[0], S[1], S[2]);
+         m.rotateQ(obj.orientation);
 	      drawShape(obj.shape, [1,1,1]);
       m.restore();
    }
