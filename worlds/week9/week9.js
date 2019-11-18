@@ -187,7 +187,7 @@ function ControllerHandler(controller) {
    }
 }
 
-let LC, RC, isNewObj = false, onScale = false, onRotate = false;
+let LC, RC, isNewObj = false, onScale = false, onRotate = false, chooseTexture = false;
 
 function onStartFrame(t, state) {
 
@@ -262,6 +262,19 @@ function onStartFrame(t, state) {
          }
       }
 
+      if (RC.isDown(1) && !LC.isDown(1) && !onScale && !onRotate) {
+         chooseTexture = true;
+      }
+
+      if(chooseTexture) {
+         obj_idx = find_grab(RC);
+         let textureChoice = findInMenuTexture(RC.position(), LC.tip());
+         if (obj_idx >= 0) {
+            let obj = objs[obj_idx];
+            obj.texture = textureChoice;
+         }
+      }
+
       if (isNewObj) {
          let obj = objs[objs.length - 1];
          obj.position = LC.tip().slice();
@@ -269,7 +282,7 @@ function onStartFrame(t, state) {
          obj.scale = [0.03, 0.03, 0.03];
       }
      
-      if (LC.isDown(1) && !RC.isDown(1) && !isNewObj) {
+      if (LC.isDown(1) && !RC.isDown(1) && !isNewObj && !chooseTexture) {
          obj_idx = find_grab(LC);
          if (obj_idx >= 0) {
             let obj = objs[obj_idx];
@@ -279,7 +292,7 @@ function onStartFrame(t, state) {
          }
       }
 
-      if (LC.isDown(1) && RC.isDown(1) && onScale) {
+      if (LC.isDown(1) && RC.isDown(1) && onScale && !chooseTexture) {
          let obj = objs[obj_idx];
          obj.scale = [1, 1, 1];
          for (let i = 0; i < 3; i++) {
@@ -303,6 +316,10 @@ function onStartFrame(t, state) {
       if (LC.release(2) && onRotate) {
          onRotate = false;   
       }
+
+      if (LC.release(1) && chooseTexture) {
+         chooseTexture = false;
+      } 
 
       if (LC.release(1))
          isNewObj = false;
@@ -356,8 +373,23 @@ let findInMenu = (mp, p) => {
    return -1;
 }
 
+let findInMenuTexture = (mp, p) => {
+   let x = p[0] - mp[0];
+   let y = p[1] - mp[1];
+   let z = p[2] - mp[2];
+   for (let n = 0; n < 4; n++) {
+      let dx = x - menuX[n];
+      let dy = y - menuY[n];
+      let dz = z;
+      if (dx * dx + dy * dy + dz * dz < .03 * .03)
+         return n % 3;
+   }
+   return -1;
+}
+
 function Obj(shape) {
    this.shape = shape;
+   this.texture = -1;
 };
 
 let objs = [];
@@ -401,16 +433,27 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
 
     -----------------------------------------------------------------*/
 
-    let showMenu = p => {
-       let x = p[0], y = p[1], z = p[2];
-       for (let n = 0 ; n < 4 ; n++) {
-          m.save();
-	     m.translate(x + menuX[n], y + menuY[n], z);
-	     m.scale(.03, .03, .03);
-	     drawShape(menuShape[n], n == menuChoice ? [1,.5,.5] : [1,1,1]);
-          m.restore();
-       }
-    }
+   let showMenu = p => {
+      let x = p[0], y = p[1], z = p[2];
+      for (let n = 0 ; n < 4 ; n++) {
+         m.save();
+      m.translate(x + menuX[n], y + menuY[n], z);
+      m.scale(.03, .03, .03);
+      drawShape(menuShape[n], n == menuChoice ? [1,.5,.5] : [1,1,1]);
+         m.restore();
+      }
+   }
+
+   let showMenuTexture = p => {
+      let x = p[0], y = p[1], z = p[2];
+      for (let n = 0; n < 4; n++) {
+         m.save();
+         m.translate(x + menuX[n], y + menuY[n], z);
+         m.scale(.03, .03, .03);
+         drawShape(menuShape[0], n == menuChoice ? [1, .5, .5] : [1, 1, 1], n%3);
+         m.restore();
+      }
+   }
 
     /*-----------------------------------------------------------------
 
@@ -508,6 +551,8 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
        drawController(RC, [0,1,1]);
        if (RC.isDown(2) && ! onScale)
           showMenu(RC.position());
+       if (RC.isDown(1) && !onScale && !onRotate)
+          showMenuTexture(RC.position());
     }
 
     /*-----------------------------------------------------------------
@@ -526,7 +571,7 @@ function onDraw(t, projMat, viewMat, state, eyeIdx) {
          m.translate(P[0], P[1], P[2]);
          m.scale(S[0], S[1], S[2]);
          m.rotateQ(obj.orientation);
-	      drawShape(obj.shape, [1,1,1]);
+	      drawShape(obj.shape, [1,1,1], obj.texture);
       m.restore();
    }
 
