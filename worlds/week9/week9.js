@@ -270,9 +270,11 @@ function onStartFrame(t, state) {
 
       if(chooseTexture) {
          obj_idx = find_grab(RC);
-         let textureChoice = findInMenuTexture(RC.position(), LC.tip());
-         if (obj_idx >= 0) {
-            objs[obj_idx].texture = textureChoice;
+         if(RC.isDown(1) && LC.isDown(1)) {
+            let textureChoice = findInMenuTexture(RC.position(), LC.tip());
+            if (obj_idx >= 0) {
+               objs[obj_idx].texture = textureChoice;
+            }
          }
       }
 
@@ -348,7 +350,6 @@ let menuX = [-.2,-.1,-.2,-.1];
 let menuY = [ .1, .1,  0,  0];
 let menuShape = [ cube, sphere, cylinder, torus ];
 let menuChoice = -1;
-
 /*-----------------------------------------------------------------
 
 If the controller tip is near to a menu item, return the index
