@@ -175,7 +175,7 @@ function ControllerHandler(controller) {
    }
 }
 
-let LC, RC, isNewObj = false, onScale = false;
+let LC, RC, isNewObj = false, onScale = false, onRotate = false;
 
 function onStartFrame(t, state) {
 
@@ -275,10 +275,22 @@ function onStartFrame(t, state) {
          }
       }
 
+      if(LC.isDown(2)) {
+         obj_idx = find_grab(LC);
+         if(obj_idx >= 0) {
+            onRotate = true;
+            let obj = objs[obj_idx];
+            obj.orientation = LC.orientation().slice();
+         }
+      }
+
       if(LC.release(1)&& onScale) {
          onScale = false;
       }
 
+      if (LC.release(2) && onRotate) {
+         onRotate = false;   
+      }
 
       if (LC.release(1))
          isNewObj = false;
