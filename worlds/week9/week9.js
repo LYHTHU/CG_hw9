@@ -15,6 +15,18 @@ Note that I measured everything in inches, and then converted to units of meters
 
 --------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------
+Modified:
+Open Menu: press the right controller's side button.
+
+Added interactions:
+Translation: press and keep down left controlers trigger when reach an object, 
+then press the right  trigger. Then drag the two controller to adjust the scale.
+
+Rotate: press and keep down the left side button when reach an object. And rotate 
+the LC to adjust the orientation of the object.
+--------------------------------------------------------------------------------*/
+
 const EYE_HEIGHT       = 0.0254 *  69;
 const HALL_LENGTH      = 0.0254 * 306;
 const HALL_WIDTH       = 0.0254 * 213;
