@@ -263,6 +263,12 @@ function onStartFrame(t, state) {
             objs.push(new Obj(menuShape[menuChoice]));
          }
       }
+      if (isNewObj) {
+         let obj = objs[objs.length - 1];
+         obj.position = LC.tip().slice();
+         obj.orientation = LC.orientation().slice();
+         obj.scale = [0.03, 0.03, 0.03];
+      }
 
       if (RC.isDown(1) && !LC.isDown(1) && !onScale && !onRotate) {
          chooseTexture = true;
@@ -277,15 +283,13 @@ function onStartFrame(t, state) {
             }
          }
       }
+      if (LC.release(1) && chooseTexture) {
+         chooseTexture = false;
+      } 
 
-      if (isNewObj) {
-         let obj = objs[objs.length - 1];
-         obj.position = LC.tip().slice();
-         obj.orientation = LC.orientation().slice();
-         obj.scale = [0.03, 0.03, 0.03];
-      }
+      
      
-      if (LC.isDown(1) && !RC.isDown(1) && !isNewObj && !chooseTexture) {
+      if (LC.isDown(1) && !RC.isDown(1) && !RC.isDown(2) && !isNewObj && !chooseTexture) {
          obj_idx = find_grab(LC);
          if (obj_idx >= 0) {
             let obj = objs[obj_idx];
@@ -320,9 +324,7 @@ function onStartFrame(t, state) {
          onRotate = false;   
       }
 
-      if (LC.release(1) && chooseTexture) {
-         chooseTexture = false;
-      } 
+
 
       if (LC.release(1))
          isNewObj = false;
